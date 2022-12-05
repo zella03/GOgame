@@ -852,7 +852,7 @@ void chainRemoval(int** arr, enum player_stone_t*** g_tab2, int* boardSize, Scor
 		}
 	}
 }
-
+//ci
 
 //KO rule
 
