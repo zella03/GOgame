@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS 
+﻿#define _CRT_SECURE_NO_WARNINGS 
 #include<stdio.h>
 #include <stdlib.h>
 #include"conio2.h"
@@ -11,98 +11,135 @@ enum player_stone_t {
 	NONE,
 	BLACK_ST,
 	WHITE_ST,
-	DOT_KO
+	DOT_KO,
+	BLACK_ATARI,
+	WHITE_ATARI
 };
 
 struct Score {
-	int white;
-	int black;
+	float white;
+	float black;
 };
 
-void menu( int* x, int* y, Score* score, int* gameState, int* moveTabY, int* moveTabX);
-void boardTab(char** g_tab, int * boardSizeToPrint, int* gameState);
-void putBoard(char** g_tab, int * boardSizeToPrint);
-void boardBorder(int * boardSizeToPrint);
+struct TableSetting {
+	int boardSize = BOARDSIZE;
+	int boardSizeToPrint = boardSize;
+	char** printStaticArr;
+	enum player_stone_t** stoneEvolvingArr;
+};
+
+struct Input {
+	int zn = KEY_0;
+	int x = BOARDX + 1;
+	int y = BOARDY + 1;
+	int boardSize = BOARDSIZE;
+	int boardSizeToPrint = boardSize; //if the user enters size of the board that is bigger than the screen choosen boardSize and size of the board that is printed is different
+	int gameState = PRE_GAME_STATE; //first state of the game
+	char** g_tab;
+	enum player_stone_t** g_tab2;
+	int moveTabY = 0;
+	int moveTabX = 0;
+	enum player_stone_t player = BLACK_ST;
+	Score score;
+	Score endScore;
+	TableSetting arr;
+	TableSetting tempArr;
+};
+
+
+
+Input setInput();
+void menu(int* x, int* y, Score* score, int* gameState, int* moveTabY, int* moveTabX, Score* endScore);
+void endMenu(Score* endScore, Score* score);
+void boardTab(char** g_tab, int* boardSizeToPrint, int* gameState);
+void putBoard(char** g_tab, int* boardSizeToPrint);
+void boardBorder(int* boardSizeToPrint);
 void printingBorder(int s, int i, int j);
-void mvConditions(int zn, int* x, int* y, int *boardSize, int* moveTabY, int* moveTabX, int boardSizeToPrint);
-void stoneSetTab(enum player_stone_t put, enum player_stone_t** g_tab2, int *boardSize);
-void stonePrint(enum player_stone_t** g_tab2, int * boardSizeToPrint, int* gameState, int* moveTabY, int* moveTabX);
-void keyMenu(int zn, enum player_stone_t* player, int* x, int* y, enum player_stone_t*** g_tab2, char*** g_tab, int *boardSize, Score* score, int* gameState,int* boardSizeToPrint,int*moveTabY, int*moveTabX);
+void mvConditions(int zn, int* x, int* y, int* boardSize, int* moveTabY, int* moveTabX, int boardSizeToPrint);
+void stoneSetTab(enum player_stone_t put, enum player_stone_t** g_tab2, int* boardSize);
+void stonePrint(enum player_stone_t** g_tab2, int* boardSizeToPrint, int* gameState, int* moveTabY, int* moveTabX);
+void keyMenu(int zn, enum player_stone_t* player, int* x, int* y, enum player_stone_t*** g_tab2, char*** g_tab, int* boardSize, Score* score, int* gameState, int* boardSizeToPrint, int* moveTabY, int* moveTabX, Score* endScore);
+void RolesOfKeyNSatrtingGame(enum player_stone_t* player, int* x, int* y, enum player_stone_t*** g_tab2, int* boardSize, Score* score, int* gameState, Score* endScore);
+void RolesOFKeyIPuttingStone(int zn, enum player_stone_t* player, enum player_stone_t*** g_tab2, int* boardSize, Score* score, int* gameState, int* moveTabY, int* moveTabX);
 bool setOnBoard(enum player_stone_t* player, enum player_stone_t** g_tab2, int* moveTabY, int* moveTabX);
-void checkPositionAround(int y, int x, enum player_stone_t* player, enum player_stone_t** g_tab2, int *boardSize, Score* score);
+void checkPositionAround(int y, int x, enum player_stone_t* player, enum player_stone_t** g_tab2, int* boardSize, Score* score);
 void killOpponent(int y, int x, enum player_stone_t* player, enum player_stone_t** g_tab2, Score* score);
-bool checkIfSuicide(int y, int x, enum player_stone_t* player, enum player_stone_t** g_tab2, int *boardSize);
+bool checkIfSuicide(int y, int x, enum player_stone_t* player, enum player_stone_t** g_tab2, int* boardSize);
 void checkIfSuicideLogic(enum player_stone_t** g_tab2, int*** arr, int* boardSize, enum player_stone_t* player, int yNow, int xNow, int* notPut, int free, int checkBoardSide, int boardCondition);
 void menuDuringGame(int state);
-void keyMenuFirst(int zn, enum player_stone_t*** g_tab2, char*** g_tab, int *boardSize, Score* score, int* gameState, int* boardSizeToPrint);
+void keyMenuFirst(int zn, enum player_stone_t*** g_tab2, char*** g_tab, int* boardSize, Score* score, int* gameState, int* boardSizeToPrint, enum player_stone_t* player, Score* endScore);
 void firstMenu();
-void setNewSizeTabs(char zn, enum player_stone_t*** g_tab2, char*** g_tab, int *boardSize);
+void setNewSizeTabs(char zn, enum player_stone_t*** g_tab2, char*** g_tab, int* boardSize);
 void allocateTabs(int* boardSize, enum player_stone_t*** g_tab2, char*** g_tab);
 void freeTabs(int* boardSize, enum player_stone_t** g_tab2, char** g_tab);
-void intoFile(enum player_stone_t** g_tab2,int *boardSize, Score * score);
-bool fromFile(enum player_stone_t*** g_tab2, int* boardSize, char*** g_tab, Score* score);
+void intoFile(enum player_stone_t** g_tab2, int* boardSize, Score* score, enum player_stone_t* player);
+bool fromFile(enum player_stone_t*** g_tab2, int* boardSize, char*** g_tab, Score* score, enum player_stone_t* player);
 void setFromFile(enum player_stone_t*** g_tab2, int* boardSize, int* nfromFile);
 bool nameOfFile(char* txt);
 bool checkForOtherPlayerIsSurr(enum player_stone_t*** g_tab2, int* boardSize, enum player_stone_t* player, int moveBackY, int moveBackX, Score* score);
-void check(enum player_stone_t*** g_tab2, int*** arr, int* boardSize, enum player_stone_t* player, int yNow, int xNow, int* free, int otherPlayer);
+void check(enum player_stone_t*** g_tab2, int*** arr, int* boardSize, int yNow, int xNow, int* free, int endPlayer, int lookForPlayer, int checkAgain);
 void chainRemoval(int** arr, enum player_stone_t*** g_tab2, int* boardSize, Score* score, int otherPlayer);
 void allocatetabChainAndFillWithZero(int*** arr, int* boardSize);
 void freetabTempChain(int** arr, int* boardSize);
 void checkIfNextToMineIsOtherPlayerThenHisLiberties(enum player_stone_t*** g_tab2, int*** arr, int* boardSize, enum player_stone_t* player, int yNow, int xNow, int* free, int otherPlayer, int* returnTemp, Score* score);
 void checkKo(enum player_stone_t*** g_tab2, int* boardSize, Score* score, int otherPlayer, int y, int x);
-void outFromKoRule(enum player_stone_t*** g_tab2, int* boardSize);
+void outFromKoRule(enum player_stone_t*** g_tab2, int* boardSize, Score* score, int currScoreWhite, int currScoreBlack);
+void countingPoints(int* boardSize, enum player_stone_t** g_tab2, enum player_stone_t notTosurround, Score* endScore);
 
 int main() {
-	int zn = KEY_0, x = BOARDX+1, y = BOARDY+1;
-	int boardSize = BOARDSIZE, boardSizeToPrint = boardSize; //if the user enters size of the board that is bigger than the screen choosen boardSize and size of the board that is printed is different
-	int gameState = PRE_GAME_STATE; //first state of the game
-	char** g_tab;
-	enum player_stone_t** g_tab2;
-	allocateTabs(&boardSize, &g_tab2, &g_tab);
-	int moveTabY = 0, moveTabX = 0;
 
-	enum player_stone_t player = BLACK_ST;
-	Score score;
-	score.white = 0;
-	score.black = 0;
-	
+	Input in;
+	allocateTabs(&in.boardSize, &in.g_tab2, &in.g_tab);
+	in.score.white = 0;
+	in.score.black = 0;
+
+	in.endScore.white = 0;
+	in.endScore.black = 0;
+
+
 #ifndef __cplusplus
 	Conio2_Init();
 #endif
+
 	settitle("Monika, Mazella, 193334");
 	_setcursortype(_NOCURSOR);
 
-	stoneSetTab(NONE, g_tab2, &boardSize);
+	stoneSetTab(NONE, in.g_tab2, &in.boardSize);
 	do {
 		textbackground(BLACK);
 		clrscr();
 
-		menu( &x, &y, &score, &gameState, &moveTabY, &moveTabX);
-		
-		boardTab(g_tab, &boardSizeToPrint,&gameState);
-		stonePrint(g_tab2, &boardSizeToPrint, &gameState, &moveTabY,&moveTabX);
+		menu(&in.x, &in.y, &in.score, &in.gameState, &in.moveTabY, &in.moveTabX, &in.endScore);
 
-		gotoxy(x, y);
+		boardTab(in.g_tab, &in.boardSizeToPrint, &in.gameState);
+		stonePrint(in.g_tab2, &in.boardSizeToPrint, &in.gameState, &in.moveTabY, &in.moveTabX);
+
+		gotoxy(in.x, in.y);
 		textcolor(LIGHTGRAY);
 		textbackground(BLACK);
-		if(gameState!=PRE_GAME_STATE) putch('X');
+		if ((in.gameState != PRE_GAME_STATE)&& (in.gameState != END_GAME_STATE)) putch('x');
 
-		zn = getch();
-		keyMenu(zn,&player, &x,&y, &g_tab2,&g_tab, &boardSize, &score,&gameState, &boardSizeToPrint,&moveTabY,&moveTabX);
+		in.zn = getch();
+		keyMenu(in.zn, &in.player, &in.x, &in.y, &in.g_tab2, &in.g_tab, &in.boardSize, &in.score, &in.gameState, &in.boardSizeToPrint, &in.moveTabY, &in.moveTabX, &in.endScore);
 
-	} while (zn != KEY_Q);
+	} while (in.zn != KEY_Q);
 
-	_setcursortype(_NORMALCURSOR);	
+	freeTabs(&in.boardSize, in.g_tab2, in.g_tab);
+
+	_setcursortype(_NORMALCURSOR);
 	return 0;
 }
 
 //printing menu
-void menu( int* x, int* y, Score* score, int* gameState, int *moveTabY, int *moveTabX) {
+void menu(int* x, int* y, Score* score, int* gameState, int* moveTabY, int* moveTabX, Score* endScore) {
 	char txt[32];
 	textcolor(LIGHTGRAY);
 
 	if ((*gameState) == PRE_GAME_STATE) {
 		firstMenu();
+	}
+	else if ((*gameState) == END_GAME_STATE) {
+		endMenu(endScore, score);
 	}
 	else {
 		gotoxy(MENUX, MENUY + 4);
@@ -135,10 +172,12 @@ void menu( int* x, int* y, Score* score, int* gameState, int *moveTabY, int *mov
 		cputs(itoa((*score).white, txt, 10));
 		gotoxy(MENUX, MENUY + 20);
 		cputs("creator: Monika Mazella nr.193334");
+		gotoxy(MENUX, MENUY + 22);
+		cputs("list of implemented points:");
+		gotoxy(MENUX, MENUY + 23);
+		cputs("a,b,c,d,e,f,g,h,i,j,k,1/2 l");
 		if (*gameState == HANDICAP_STATE) {
-			textbackground(LIGHTBLUE);
-			gotoxy(MENUX, MENUY + 2);
-			cputs("PRESS N TO START A GAME");
+			menuDuringGame(7);
 		}
 	}
 }
@@ -146,17 +185,19 @@ void menu( int* x, int* y, Score* score, int* gameState, int *moveTabY, int *mov
 void firstMenu() {
 	textcolor(LIGHTGRAY);
 
+	textbackground(RED);
 	gotoxy(MENUX + 3, MENUY);
 	cputs("PRESS THE KEY");
-	gotoxy(MENUX+3, MENUY + 2);
+	textbackground(BLACK);
+	gotoxy(MENUX + 3, MENUY + 2);
 	cputs("n      = start a new game");
-	gotoxy(MENUX+3, MENUY + 3);
+	gotoxy(MENUX + 3, MENUY + 3);
 	cputs("l      = load the game state");
-	gotoxy(MENUX+3, MENUY + 4);
+	gotoxy(MENUX + 3, MENUY + 4);
 	cputs("p      = select board size");
 	gotoxy(MENUX + 3, MENUY + 5);
 	cputs("h      = state editor - handicap");
-	gotoxy(MENUX+3, MENUY + 6);
+	gotoxy(MENUX + 3, MENUY + 6);
 	cputs("q      = exit");
 }
 
@@ -212,14 +253,60 @@ void menuDuringGame(int state) {
 		gotoxy(MENUX, MENUY + 1);
 		cputs("Put it somewhere else");
 	}
+
+	else if (state == 7) {
+		textbackground(LIGHTBLUE);
+		gotoxy(MENUX, MENUY + 2);
+		cputs("PRESS N TO START A GAME");
+	}
+}
+
+void endMenu(Score* endScore, Score* score) {
+	textcolor(LIGHTGRAY);
+	char txt[32];
+
+	
+	(*endScore).black += (*score).black;
+	(*endScore).white += (*score).white;
+	(*endScore).white += 6.5;
+
+	gotoxy(MENUX, MENUY + 4);
+	if ((*endScore).black > (*endScore).white) {
+		cputs("CONGRATULATIONS ");
+		textbackground(RED);
+		cputs("BLACK PLAYER");
+		textbackground(BLACK);
+	}
+	else if ((*endScore).black == (*endScore).white) {
+		cputs("DRAW");
+	}
+	else {
+		cputs("CONGRATULATIONS ");
+		textbackground(RED);
+		cputs("WHITE PLAYER");
+		textbackground(BLACK);
+	}
+
+	gotoxy(MENUX, MENUY+7);
+	cputs("BLACK END SCORE  = ");
+	sprintf(txt, "%.1f", (*endScore).black);
+	cputs(txt);
+	gotoxy(MENUX, MENUY+9);
+	cputs("WHITE END SCORE  = ");
+	sprintf(txt, "%.1f", (*endScore).white);
+	cputs(txt);
+	gotoxy(MENUX, MENUY + 11);
+	cputs("Press 'n' to start a new game");
+	gotoxy(MENUX, MENUY + 12);
+	cputs("Press 'q' to exit");
 }
 
 //filling the array, which is a board, with the appropriate signs
-void boardTab(char** g_tab, int * boardSizeToPrint, int* gameState) {
+void boardTab(char** g_tab, int* boardSizeToPrint, int* gameState) {
 	textbackground(LIGHTGRAY);
 	textcolor(BLACK);
 
-	if ((*gameState) != PRE_GAME_STATE) {
+	if (((*gameState) != PRE_GAME_STATE)) {
 		for (int i = 0; i < (((*boardSizeToPrint) * 2) - 1); i++) {
 			for (int j = 0; j < (((*boardSizeToPrint) * 4) - 2); j++) {
 				if ((i % 2) == 0) {
@@ -246,7 +333,7 @@ void boardTab(char** g_tab, int * boardSizeToPrint, int* gameState) {
 }
 
 //printing board on the screen
-void putBoard(char** g_tab, int * boardSizeToPrint) {
+void putBoard(char** g_tab, int* boardSizeToPrint) {
 	for (int i = 0; i < (((*boardSizeToPrint) * 2) - 1); i++) {
 		for (int j = 0; j < (((*boardSizeToPrint) * 4) - 2); j++) {
 			gotoxy(BOARDX + j + 1, BOARDY + i + 1);
@@ -256,7 +343,7 @@ void putBoard(char** g_tab, int * boardSizeToPrint) {
 }
 
 //creating the border
-void boardBorder(int * boardSizeToPrint) {
+void boardBorder(int* boardSizeToPrint) {
 	textcolor(BROWN);
 
 	for (int i = 0; i < (((*boardSizeToPrint) * 2) + 1); i++) {
@@ -290,7 +377,7 @@ void printingBorder(int s, int i, int j) {
 }
 
 //setting fields of the board designed for players moves - at the beggining NONE
-void stoneSetTab(player_stone_t put, enum player_stone_t** g_tab2, int *boardSize) {
+void stoneSetTab(player_stone_t put, enum player_stone_t** g_tab2, int* boardSize) {
 	for (int i = 0; i < *boardSize; i++) {
 		for (int j = 0; j < *boardSize; j++) {
 			g_tab2[i][j] = put;
@@ -299,25 +386,25 @@ void stoneSetTab(player_stone_t put, enum player_stone_t** g_tab2, int *boardSiz
 }
 
 //printing the stones on the board
-void stonePrint(enum player_stone_t** g_tab2, int * boardSizeToPrint, int* gameState, int* moveTabY, int* moveTabX) {
+void stonePrint(enum player_stone_t** g_tab2, int* boardSizeToPrint, int* gameState, int* moveTabY, int* moveTabX) {
 	textcolor(BLACK);
-	
-	if ((*gameState) != PRE_GAME_STATE) {
+
+	if (((* gameState) != PRE_GAME_STATE)) {
 		for (int i = 0; i < *boardSizeToPrint; i++) {// boardsize - move/tabY ???????
 			for (int j = 0; j < *boardSizeToPrint; j++) {
-				if (g_tab2[i+(*moveTabY)][j+(*moveTabX)] == NONE) {
+				if (g_tab2[i + (*moveTabY)][j + (*moveTabX)] == NONE) {
 					gotoxy(BOARDX + (j * 4) + 1, BOARDY + (i * 2) + 1);
 					putch('+');
 				}
-				else if (g_tab2[i+(*moveTabY)][j+(*moveTabX)] == BLACK_ST) {
+				else if (g_tab2[i + (*moveTabY)][j + (*moveTabX)] == BLACK_ST) {
 					gotoxy(BOARDX + (j * 4) + 1, BOARDY + (i * 2) + 1);
 					putch(219);
 				}
-				else if (g_tab2[i+(*moveTabY)][j+(*moveTabX)] == WHITE_ST) {
+				else if (g_tab2[i + (*moveTabY)][j + (*moveTabX)] == WHITE_ST) {
 					gotoxy(BOARDX + (j * 4) + 1, BOARDY + (i * 2) + 1);
-					putch(177);
+					putch(79);
 				}
-				else if (g_tab2[i+(*moveTabY)][j+(*moveTabX)] == DOT_KO) {
+				else if (g_tab2[i + (*moveTabY)][j + (*moveTabX)] == DOT_KO) {
 					gotoxy(BOARDX + (j * 4) + 1, BOARDY + (i * 2) + 1);
 					putch(250);
 				}
@@ -326,72 +413,99 @@ void stonePrint(enum player_stone_t** g_tab2, int * boardSizeToPrint, int* gameS
 	}
 }
 
-void keyMenu(int zn, enum player_stone_t* player,int *x,int* y, enum player_stone_t*** g_tab2, char*** g_tab, int *boardSize, Score* score, int* gameState, int * boardSizeToPrint, int* moveTabY, int* moveTabX) {
-	static int changePlayer = 0;
-	static int moveBackX;
-	static int moveBackY;
-	int temp = 0;
 
-	if ((*gameState) == PRE_GAME_STATE) keyMenuFirst(zn, g_tab2, g_tab, boardSize, score, gameState, boardSizeToPrint);
-	else {
+//key menues -> first one without anything initialized (for settings) and second one during the game
+
+void keyMenu(int zn, enum player_stone_t* player, int* x, int* y, enum player_stone_t*** g_tab2, char*** g_tab, int* boardSize, Score* score, int* gameState, int* boardSizeToPrint, int* moveTabY, int* moveTabX, Score* endScore) {
+
+	if (((*gameState) == PRE_GAME_STATE) && ((*gameState) != END_GAME_STATE)) keyMenuFirst(zn, g_tab2, g_tab, boardSize, score, gameState, boardSizeToPrint, player, endScore);
+	else if(((*gameState) != END_GAME_STATE)) {
 		if (zn == KEY_0) mvConditions(zn, x, y, boardSize, moveTabY, moveTabX, *boardSizeToPrint);
 		else if (zn == KEY_I) {
-			moveBackY = ((wherey() - BOARDY - 1) / 2)+(*moveTabY);
-			moveBackX = ((wherex() - BOARDX - 1) / 4)+(*moveTabX);
-			if (setOnBoard(player, *g_tab2,moveTabY,moveTabX)) {
-				while ((zn != KEY_ENTER) && (zn != KEY_ESC)) {
-					menuDuringGame(2);
-					zn = getch();
-					if (zn == KEY_ENTER) {
-						if (checkForOtherPlayerIsSurr(g_tab2, boardSize, player, moveBackY, moveBackX, score)==false) {
-							if (checkIfSuicide(moveBackY, moveBackX, player, *g_tab2, boardSize)) {
-								menuDuringGame(1);
-								zn = getch();
-								temp = 1;
-							}
-						}
-						outFromKoRule(g_tab2, boardSize);
-
-						if ((temp != 1)&&(*gameState!=HANDICAP_STATE)) {
-							if (changePlayer == 0) {
-								*player = WHITE_ST;
-								changePlayer = 1;
-							}
-							else {
-								*player = BLACK_ST;
-								changePlayer = 0;
-							}
-						}
-					}
-					else if (zn == KEY_ESC) (* g_tab2)[moveBackY][moveBackX] = NONE;
-				}
-			}
-			else {
-				while (zn != KEY_0) {
-					menuDuringGame(6);
-					zn = getch();
-				}
-			}
+			RolesOFKeyIPuttingStone(zn, player, g_tab2, boardSize, score, gameState, moveTabY, moveTabX);
 		}
 		else if (zn == KEY_N) {
-			if (*gameState == HANDICAP_STATE) {
-				*gameState = PLAY_GAME_STATE;
-				*player = WHITE_ST;
-				changePlayer = 1;
-			} 
-			else {
-				stoneSetTab(NONE, *g_tab2, boardSize);
-				*gameState = PRE_GAME_STATE;
-				*x = BOARDX + 1, *y = BOARDY + 1;
-				(*score).white = 0;
-				(*score).black = 0;
+			RolesOfKeyNSatrtingGame(player, x, y, g_tab2, boardSize, score, gameState, endScore);
+		}
+		else if (zn == KEY_S) intoFile(*g_tab2, boardSize, score, player);
+		else if (zn == KEY_F) {
+			countingPoints(boardSize, *g_tab2, BLACK_ST, endScore);
+			countingPoints(boardSize, *g_tab2, WHITE_ST, endScore);
+			*gameState = END_GAME_STATE;
+			if ((*endScore).black == ((*boardSize) * (*boardSize))) {
+				(*endScore).black = 0;
+				(*endScore).white = 0;
 			}
 		}
-		else if (zn == KEY_S) intoFile(*g_tab2,boardSize,score);
 	}
 }
 
-void keyMenuFirst(int zn, enum player_stone_t*** g_tab2, char*** g_tab, int *boardSize, Score* score, int* gameState, int* boardSizeToPrint) {
+void RolesOFKeyIPuttingStone(int zn, enum player_stone_t* player, enum player_stone_t*** g_tab2, int* boardSize, Score* score, int* gameState, int* moveTabY, int* moveTabX) {
+	static int changePlayer;
+	static int moveBackX;
+	static int moveBackY;
+	int temp = 0;
+	int currScoreWhite = (*score).white;
+	int currScoreBlack = (*score).black;
+
+	if (*player == BLACK_ST) changePlayer = 0;
+	else changePlayer = 1;
+
+	moveBackY = ((wherey() - BOARDY - 1) / 2) + (*moveTabY);
+	moveBackX = ((wherex() - BOARDX - 1) / 4) + (*moveTabX);
+	if (setOnBoard(player, *g_tab2, moveTabY, moveTabX)) {
+		while ((zn != KEY_ENTER) && (zn != KEY_ESC)) {
+			menuDuringGame(2);
+			zn = getch();
+			if (zn == KEY_ENTER) {
+				if (checkForOtherPlayerIsSurr(g_tab2, boardSize, player, moveBackY, moveBackX, score) == false) {
+					if (checkIfSuicide(moveBackY, moveBackX, player, *g_tab2, boardSize)) {
+						menuDuringGame(1);
+						zn = getch();
+						temp = 1;
+					}
+				}
+				outFromKoRule(g_tab2, boardSize, score, currScoreWhite, currScoreBlack);
+
+				if ((temp != 1) && (*gameState != HANDICAP_STATE)) {
+					if (changePlayer == 0) {
+						*player = WHITE_ST;
+					}
+					else {
+						*player = BLACK_ST;
+					}
+				}
+			}
+			else if (zn == KEY_ESC) (*g_tab2)[moveBackY][moveBackX] = NONE;
+		}
+	}
+	else {
+		while (zn != KEY_0) {
+			menuDuringGame(6);
+			zn = getch();
+		}
+	}
+}
+
+void RolesOfKeyNSatrtingGame(enum player_stone_t* player, int* x, int* y, enum player_stone_t*** g_tab2, int* boardSize, Score* score, int* gameState, Score* endScore) {
+	if (*gameState == HANDICAP_STATE) {
+		*gameState = PLAY_GAME_STATE;
+		*player = WHITE_ST;
+	}
+	else {
+		stoneSetTab(NONE, *g_tab2, boardSize);
+		*gameState = PRE_GAME_STATE;
+		*boardSize = BOARDSIZE;
+		*x = BOARDX + 1, * y = BOARDY + 1;
+		*player = BLACK_ST;
+		(*score).white = 0;
+		(*score).black = 0;
+		(*endScore).white = 0;
+		(*endScore).black = 0;
+	}
+}
+
+void keyMenuFirst(int zn, enum player_stone_t*** g_tab2, char*** g_tab, int* boardSize, Score* score, int* gameState, int* boardSizeToPrint, enum player_stone_t* player, Score* endScore) {
 	if (zn == KEY_N) {
 		*gameState = PLAY_GAME_STATE;
 		_setcursortype(_NOCURSOR);
@@ -401,38 +515,39 @@ void keyMenuFirst(int zn, enum player_stone_t*** g_tab2, char*** g_tab, int *boa
 		menuDuringGame(3);
 		zn = getch();
 		if (zn == KEY_1) {
-			setNewSizeTabs(KEY_1,g_tab2,g_tab,boardSize);
+			setNewSizeTabs(KEY_1, g_tab2, g_tab, boardSize);
 			*boardSizeToPrint = *boardSize;
 		}
 		else if (zn == KEY_2) {
-			setNewSizeTabs(KEY_2, g_tab2,g_tab,boardSize);
+			setNewSizeTabs(KEY_2, g_tab2, g_tab, boardSize);
 			*boardSizeToPrint = *boardSize;
 		}
 		else if (zn == KEY_3) {
-			setNewSizeTabs(KEY_3,g_tab2,g_tab,boardSize);
+			setNewSizeTabs(KEY_3, g_tab2, g_tab, boardSize);
 			*boardSizeToPrint = *boardSize;
 		}
 		else if (zn == KEY_4) {
-			setNewSizeTabs(KEY_4,g_tab2,g_tab, boardSize);
-			if (*boardSize > 20) {
+			setNewSizeTabs(KEY_4, g_tab2, g_tab, boardSize);
+			if (*boardSize > BOARDSIZE_SCROLL) {
 				*boardSizeToPrint = 9;
 			}
 			else *boardSizeToPrint = *boardSize;
 		}
 	}
 	else if (zn == KEY_L) {
-		if (fromFile(g_tab2, boardSize, g_tab,score)) *gameState = PLAY_GAME_STATE;
+		if (fromFile(g_tab2, boardSize, g_tab, score, player)) *gameState = PLAY_GAME_STATE;
 		else *gameState = PRE_GAME_STATE;
 	}
 	else if (zn == KEY_H) {
 		*gameState = HANDICAP_STATE;
+		(*endScore).white += 0.5;
 	}
 }
 
-////////////////////////////czy musz� mie� zn2 czy moze by� podmianka dla zn ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
-void setNewSizeTabs(char zn, enum player_stone_t*** g_tab2, char*** g_tab, int *boardSize) {
-	freeTabs(boardSize, *g_tab2,*g_tab);
-	int zn2= KEY_0;
+
+void setNewSizeTabs(char zn, enum player_stone_t*** g_tab2, char*** g_tab, int* boardSize) {
+	freeTabs(boardSize, *g_tab2, *g_tab);
+	int zn2 = KEY_0;
 	if (zn == KEY_1) {
 		*boardSize = 9;
 	}
@@ -451,12 +566,12 @@ void setNewSizeTabs(char zn, enum player_stone_t*** g_tab2, char*** g_tab, int *
 		_setcursortype(_NORMALCURSOR);
 		while (true) {
 			zn2 = getch();
-			if (zn2 == KEY_ENTER) {
-				break;
+			if (zn2 == KEY_ENTER) break;
+			else if ((zn2 >= '0') && (zn2 <= '9')) {
+				arr[size] = int(zn2) - 48;
+				size++;
+				putch(zn2);
 			}
-			arr[size] = int(zn2) - 48;
-			size++;
-			putch(zn2);
 		}
 		_setcursortype(_NOCURSOR);
 		for (int i = size - 1; i >= 0; i--) {
@@ -465,12 +580,12 @@ void setNewSizeTabs(char zn, enum player_stone_t*** g_tab2, char*** g_tab, int *
 		}
 		*boardSize = playerSize;
 	}
-	allocateTabs(boardSize,g_tab2,g_tab);
+	allocateTabs(boardSize, g_tab2, g_tab);
 	stoneSetTab(NONE, *g_tab2, boardSize);
 }
 
-//setting on the board appropriate color of the stone
-bool setOnBoard(enum player_stone_t* player, enum player_stone_t** g_tab2,int*moveTabY, int* moveTabX) {
+//setting on the board appropriate color of the stone if not occupied
+bool setOnBoard(enum player_stone_t* player, enum player_stone_t** g_tab2, int* moveTabY, int* moveTabX) {
 	if (g_tab2[((wherey() - BOARDY - 1) / 2) + (*moveTabY)][((wherex() - BOARDX - 1) / 4) + (*moveTabX)] == NONE) {
 		g_tab2[((wherey() - BOARDY - 1) / 2) + (*moveTabY)][((wherex() - BOARDX - 1) / 4) + (*moveTabX)] = *player;
 		return true;
@@ -480,13 +595,13 @@ bool setOnBoard(enum player_stone_t* player, enum player_stone_t** g_tab2,int*mo
 	}
 }
 
-//checking if the field is surrounded
-bool checkIfSuicide(int y, int x, enum player_stone_t* player, enum player_stone_t** g_tab2, int *boardSize) {
+//checking if the field is surrounded -> if not suicide
+bool checkIfSuicide(int y, int x, enum player_stone_t* player, enum player_stone_t** g_tab2, int* boardSize) {
 	int notPut = 0;
 	int** arr;
 	int free = 0;
 	allocatetabChainAndFillWithZero(&arr, boardSize);
-	
+
 	checkIfSuicideLogic(g_tab2, &arr, boardSize, player, y, x - 1, &notPut, free, x, 0);
 	checkIfSuicideLogic(g_tab2, &arr, boardSize, player, y, x + 1, &notPut, free, x, (*boardSize - 1));
 	checkIfSuicideLogic(g_tab2, &arr, boardSize, player, y - 1, x, &notPut, free, y, 0);
@@ -502,7 +617,7 @@ bool checkIfSuicide(int y, int x, enum player_stone_t* player, enum player_stone
 void checkIfSuicideLogic(enum player_stone_t** g_tab2, int*** arr, int* boardSize, enum player_stone_t* player, int yNow, int xNow, int* notPut, int free, int checkBoardSide, int boardCondition) {
 	if (checkBoardSide != boardCondition) {
 		if (g_tab2[yNow][xNow] == *player) {
-			check(&g_tab2, arr, boardSize, player, yNow, xNow, &free, *player);
+			check(&g_tab2, arr, boardSize, yNow, xNow, &free, NONE, *player, *player);
 			if (free == 0) {
 				(*notPut)++;
 			}
@@ -516,7 +631,7 @@ void checkIfSuicideLogic(enum player_stone_t** g_tab2, int*** arr, int* boardSiz
 }
 
 //moving over the board and setting conditions for not leaving the board by players
-void mvConditions(int zn, int* x, int* y, int *boardSize, int* moveTabY, int* moveTabX, int boardSizeToPrint) {
+void mvConditions(int zn, int* x, int* y, int* boardSize, int* moveTabY, int* moveTabX, int boardSizeToPrint) {
 	int movex = 4;
 	int movey = 2;
 	int BiggerTabX = 0;
@@ -533,10 +648,10 @@ void mvConditions(int zn, int* x, int* y, int *boardSize, int* moveTabY, int* mo
 				(*y) -= movey;
 			}
 
-			if ((BiggerTabY < 0) && (*boardSize > 20) && ((*moveTabY) > 0)) {
+			if ((BiggerTabY < 0) && (*boardSize > BOARDSIZE_SCROLL) && ((*moveTabY) > 0)) {
 				(*moveTabY)--;
 			}
-			
+
 		}
 		else if (zn == KEY_DOWN) { //condition for the lower line of the board
 			if (((*y) + movey) > (BOARDY + ((boardSizeToPrint) * 2) - 1)) {
@@ -547,7 +662,7 @@ void mvConditions(int zn, int* x, int* y, int *boardSize, int* moveTabY, int* mo
 				(*y) += movey;
 			}
 
-			if ((BiggerTabY > 0) && (*boardSize > 20) && ((*moveTabY) < ((*boardSize) - (boardSizeToPrint)))) {
+			if ((BiggerTabY > 0) && (*boardSize > BOARDSIZE_SCROLL) && ((*moveTabY) < ((*boardSize) - (boardSizeToPrint)))) {
 				(*moveTabY)++;
 			}
 		}
@@ -560,7 +675,7 @@ void mvConditions(int zn, int* x, int* y, int *boardSize, int* moveTabY, int* mo
 				(*x) -= movex;
 			}
 
-			if ((BiggerTabX < 0) && (*boardSize > 20) && ((*moveTabX) > 0)) {
+			if ((BiggerTabX < 0) && (*boardSize > BOARDSIZE_SCROLL) && ((*moveTabX) > 0)) {
 				(*moveTabX)--;
 			}
 
@@ -574,30 +689,31 @@ void mvConditions(int zn, int* x, int* y, int *boardSize, int* moveTabY, int* mo
 				(*x) += movex;
 			}
 
-			if ((BiggerTabX > 0)&& (*boardSize > 20) && ((*moveTabX) < ((*boardSize) - (boardSizeToPrint)))) {
+			if ((BiggerTabX > 0) && (*boardSize > BOARDSIZE_SCROLL) && ((*moveTabX) < ((*boardSize) - (boardSizeToPrint)))) {
 				(*moveTabX)++;
 			}
 		}
 	}
 }
 
-//allocatind and deleting used tabs
 
-void allocateTabs(int* boardSize, enum player_stone_t*** g_tab2,char*** g_tab) {
+//allocating and deleting used tabs
+
+void allocateTabs(int* boardSize, enum player_stone_t*** g_tab2, char*** g_tab) {
 	*g_tab = new char* [((*boardSize) * 2) - 1];
 	//*g_tab = (char**)malloc(sizeof(char*) * (((*boardSize) * 2) - 1));
 
 	for (int i = 0; i < ((*boardSize) * 2) - 1; i++) {
-		(* g_tab)[i] = new char[((*boardSize) * 4) - 1];
+		(*g_tab)[i] = new char[((*boardSize) * 4) - 1];
 	}
 
 	*g_tab2 = new enum player_stone_t* [*boardSize];
 	for (int i = 0; i < *boardSize; i++) {
-		(* g_tab2)[i] = new enum player_stone_t[*boardSize];
+		(*g_tab2)[i] = new enum player_stone_t[*boardSize];
 	}
 }
 
-void freeTabs(int* boardSize, enum player_stone_t** g_tab2,char**g_tab) {
+void freeTabs(int* boardSize, enum player_stone_t** g_tab2, char** g_tab) {
 	for (int i = 0; i < ((*boardSize) * 2) - 1; i++) {
 		delete g_tab[i];
 	}
@@ -630,7 +746,9 @@ void freetabTempChain(int** arr, int* boardSize) {
 	delete arr;
 }
 
+
 //files
+
 bool nameOfFile(char* txt) {
 	int zn2 = KEY_0;
 	int size = 0;
@@ -640,13 +758,9 @@ bool nameOfFile(char* txt) {
 		if (zn2 == KEY_ENTER)break;
 		else if (((zn2 >= 'A') && (zn2 <= 'Z')) || ((zn2 >= 'a') && (zn2 <= 'z')) || ((zn2 >= '1') && (zn2 <= '9'))) {
 			txt[size] = zn2;
-			size++;
+			size++;	
+			putch(zn2);
 		}
-		/*
-		else if (zn2 == KEY_BACKSPACE) {
-			//txt[--size] = '/0';
-		}*/
-		putch(zn2);
 	}
 	_setcursortype(_NOCURSOR);
 	txt[size] = '\0';
@@ -654,15 +768,20 @@ bool nameOfFile(char* txt) {
 	else return false;
 }
 
-void intoFile(enum player_stone_t** g_tab2, int *boardSize, Score* score) {
+void intoFile(enum player_stone_t** g_tab2, int* boardSize, Score* score, enum player_stone_t* player) {
 	char txt[32];
 	menuDuringGame(4);
 	gotoxy(MENUX + 1, MENUY + 1);
+	int playerFile;
+
+	if (*player == BLACK_ST) playerFile = 0;
+	else playerFile = 1;
 	if (nameOfFile(txt) != false) {
 		sprintf_s(txt, "%s.bin", txt);
 
 		FILE* plik;
 		plik = fopen(txt, "ab");
+		fwrite((void*)&playerFile, sizeof(int), 1, plik);
 		fwrite((void*)boardSize, sizeof(int), 1, plik);
 		fwrite((void*)&((*score).white), sizeof(int), 1, plik);
 		fwrite((void*)&((*score).black), sizeof(int), 1, plik);
@@ -695,24 +814,30 @@ void intoFile(enum player_stone_t** g_tab2, int *boardSize, Score* score) {
 	}
 }
 
-bool fromFile(enum player_stone_t*** g_tab2, int* boardSize, char*** g_tab, Score* score) {
-	char txt[32];
+bool fromFile(enum player_stone_t*** g_tab2, int* boardSize, char*** g_tab, Score* score, enum player_stone_t* player) {
+	int playerTurn;
 	clrscr();
 	menuDuringGame(4);
-	if(nameOfFile(txt)==false) return false;
+
+	char txt[32];
+	if (nameOfFile(txt) == false) return false;
 	sprintf_s(txt, "%s.bin", txt);
-	
+
 	FILE* plik;
 	plik = fopen(txt, "rb");
 	if (plik != NULL) {
 		freeTabs(boardSize, *g_tab2, *g_tab);
 
+		fread(&playerTurn, sizeof(int), 1, plik);
+		if (playerTurn == 0)*player = BLACK_ST;
+		else *player = WHITE_ST;
+
 		fread(boardSize, sizeof(int), 1, plik);
-		int* nfromFile = new int[((*boardSize) * (*boardSize))+2];
+		int* nfromFile = new int[((*boardSize) * (*boardSize)) + 2];
 
 		allocateTabs(boardSize, g_tab2, g_tab);
 		stoneSetTab(NONE, *g_tab2, boardSize);
-		
+
 		fread(&((*score).white), sizeof(int), 1, plik);
 		fread(&((*score).black), sizeof(int), 1, plik);
 		fread(nfromFile, sizeof(int), (((*boardSize) * (*boardSize))), plik);
@@ -743,7 +868,7 @@ void setFromFile(enum player_stone_t*** g_tab2, int* boardSize, int* nfromFile) 
 			else if (nfromFile[k] == WHITE_FILE) {
 				(*g_tab2)[i][j] = WHITE_ST;
 			}
-			else if (nfromFile[k] ==DOT_FILE) {
+			else if (nfromFile[k] == DOT_FILE) {
 				(*g_tab2)[i][j] = DOT_KO;
 			}
 			k++;
@@ -754,7 +879,7 @@ void setFromFile(enum player_stone_t*** g_tab2, int* boardSize, int* nfromFile) 
 
 //removing chains
 
-bool checkForOtherPlayerIsSurr(enum player_stone_t*** g_tab2, int* boardSize, enum player_stone_t* player,int moveBackY,int moveBackX, Score* score) {
+bool checkForOtherPlayerIsSurr(enum player_stone_t*** g_tab2, int* boardSize, enum player_stone_t* player, int moveBackY, int moveBackX, Score* score) {
 	int yNow = moveBackY;
 	int xNow = moveBackX;
 	int** arr;
@@ -771,18 +896,19 @@ bool checkForOtherPlayerIsSurr(enum player_stone_t*** g_tab2, int* boardSize, en
 	}
 
 	int free = 0;
-	if ((xNow != 0) && ((* g_tab2)[yNow][xNow - 1] == otherPlayer)) {
+	if ((xNow != 0) && ((*g_tab2)[yNow][xNow - 1] == otherPlayer)) {
 		checkIfNextToMineIsOtherPlayerThenHisLiberties(g_tab2, &arr, boardSize, player, yNow, xNow - 1, &free, otherPlayer, &returnTemp, score);
 	}
 	if ((xNow != (*boardSize - 1)) && ((*g_tab2)[yNow][xNow + 1] == otherPlayer)) {
 		checkIfNextToMineIsOtherPlayerThenHisLiberties(g_tab2, &arr, boardSize, player, yNow, xNow + 1, &free, otherPlayer, &returnTemp, score);
 	}
-	if ((yNow != 0) && ((* g_tab2)[yNow - 1][xNow] == otherPlayer)) {
+	if ((yNow != 0) && ((*g_tab2)[yNow - 1][xNow] == otherPlayer)) {
 		checkIfNextToMineIsOtherPlayerThenHisLiberties(g_tab2, &arr, boardSize, player, yNow - 1, xNow, &free, otherPlayer, &returnTemp, score);
 	}
-	if ((yNow != (*boardSize - 1)) && ((*g_tab2)[yNow+1][xNow] == otherPlayer)) {
+	if ((yNow != (*boardSize - 1)) && ((*g_tab2)[yNow + 1][xNow] == otherPlayer)) {
 		checkIfNextToMineIsOtherPlayerThenHisLiberties(g_tab2, &arr, boardSize, player, yNow + 1, xNow, &free, otherPlayer, &returnTemp, score);
 	}
+	freetabTempChain(arr, boardSize);
 
 	//chain was destroid so my move is not for sure suicide move
 	if (returnTemp > 0) {
@@ -791,31 +917,32 @@ bool checkForOtherPlayerIsSurr(enum player_stone_t*** g_tab2, int* boardSize, en
 	return false;
 }
 
-void checkIfNextToMineIsOtherPlayerThenHisLiberties(enum player_stone_t*** g_tab2, int*** arr, int* boardSize, enum player_stone_t* player, int yNow, int xNow, int* free, int otherPlayer, int *returnTemp, Score* score) {
-	check(g_tab2, arr, boardSize, player, yNow, xNow, free, otherPlayer);
+void checkIfNextToMineIsOtherPlayerThenHisLiberties(enum player_stone_t*** g_tab2, int*** arr, int* boardSize, enum player_stone_t* player, int yNow, int xNow, int* free, int otherPlayer, int* returnTemp, Score* score) {
+	check(g_tab2, arr, boardSize, yNow, xNow, free, NONE, otherPlayer, otherPlayer);
 	if ((*free) == 0) {
 		chainRemoval(*arr, g_tab2, boardSize, score, otherPlayer);
 		(*returnTemp)++;
 	}
 	freetabTempChain(*arr, boardSize);
 	allocatetabChainAndFillWithZero(arr, boardSize);
-	(* free) = 0;
+	(*free) = 0;
 }
 
-void check(enum player_stone_t*** g_tab2, int*** arr, int* boardSize, enum player_stone_t* player,int yNow,int xNow,int *free, int otherPlayer) {
+void check(enum player_stone_t*** g_tab2, int*** arr, int* boardSize, int yNow, int xNow, int* free, int endPlayer, int lookForPlayer, int checkAgain)
+{
 	if ((*arr)[yNow][xNow] == 1) return;
 
 	(*arr)[yNow][xNow] = 1;
-	if (((xNow != 0) && ((* g_tab2)[yNow][xNow - 1] == NONE)) || ((xNow != (*boardSize - 1))
-		&& ((* g_tab2)[yNow][xNow + 1] == NONE)) || ((yNow != 0) && ((* g_tab2)[yNow - 1][xNow] == NONE))
-		|| ((yNow != (*boardSize - 1)) && ((* g_tab2)[yNow + 1][xNow] == NONE))) {
+	if (((xNow != 0) && ((*g_tab2)[yNow][xNow - 1] == endPlayer)) || ((xNow != (*boardSize - 1)) //it schouldn't be next to main player (during kiling is NONE, during counting for ex. if I count for white_stones surrounding I dont want to meet black stone)
+		&& ((*g_tab2)[yNow][xNow + 1] == endPlayer)) || ((yNow != 0) && ((*g_tab2)[yNow - 1][xNow] == endPlayer))
+		|| ((yNow != (*boardSize - 1)) && ((*g_tab2)[yNow + 1][xNow] == endPlayer))) {
 		(*free)++;
 	}
 	else {
-		if((xNow!=0)&&((* g_tab2)[yNow][xNow - 1] == otherPlayer)) check(g_tab2, arr, boardSize, player, yNow, xNow - 1, free, otherPlayer);
-		if ((xNow != ((*boardSize)-1)) && ((* g_tab2)[yNow][xNow + 1] == otherPlayer)) check(g_tab2, arr, boardSize, player, yNow, xNow + 1, free, otherPlayer);
-		if ((yNow != 0) && ((* g_tab2)[yNow - 1][xNow] == otherPlayer)) check(g_tab2, arr, boardSize, player, yNow - 1, xNow, free, otherPlayer);
-		if ((yNow != ((*boardSize)-1)) && ((* g_tab2)[yNow + 1][xNow] == otherPlayer)) check(g_tab2, arr, boardSize, player, yNow + 1, xNow, free, otherPlayer);
+		if ((xNow != 0) && ((*g_tab2)[yNow][xNow - 1] == lookForPlayer)) check(g_tab2, arr, boardSize, yNow, xNow - 1, free, endPlayer, lookForPlayer, checkAgain);
+		if ((xNow != ((*boardSize) - 1)) && ((*g_tab2)[yNow][xNow + 1] == lookForPlayer)) check(g_tab2, arr, boardSize, yNow, xNow + 1, free, endPlayer, lookForPlayer, checkAgain);
+		if ((yNow != 0) && ((*g_tab2)[yNow - 1][xNow] == lookForPlayer)) check(g_tab2, arr, boardSize, yNow - 1, xNow, free, endPlayer, lookForPlayer, checkAgain);
+		if ((yNow != ((*boardSize) - 1)) && ((*g_tab2)[yNow + 1][xNow] == lookForPlayer)) check(g_tab2, arr, boardSize, yNow + 1, xNow, free, endPlayer, lookForPlayer, checkAgain);
 	}
 }
 
@@ -832,7 +959,7 @@ void chainRemoval(int** arr, enum player_stone_t*** g_tab2, int* boardSize, Scor
 			}
 		}
 	}
-	
+
 	if (scoreCount == 1) {
 		checkKo(g_tab2, boardSize, score, otherPlayer, y, x);
 	}
@@ -852,11 +979,10 @@ void chainRemoval(int** arr, enum player_stone_t*** g_tab2, int* boardSize, Scor
 		}
 	}
 }
-//ci
 
 //KO rule
 
-void checkKo(enum player_stone_t*** g_tab2, int* boardSize, Score* score, int otherPlayer,int y,int x) {
+void checkKo(enum player_stone_t*** g_tab2, int* boardSize, Score* score, int otherPlayer, int y, int x) {
 	static int KO = 0;
 	static int tempx, tempy;
 	enum player_stone_t playerTocheckforKo;
@@ -865,15 +991,15 @@ void checkKo(enum player_stone_t*** g_tab2, int* boardSize, Score* score, int ot
 		tempx = x;
 		tempy = y;
 	}
-	
+
 	if (KO == 0) {
 		KO++;
 		if (otherPlayer == BLACK_ST) {
-			(*score).white ++;
+			(*score).white++;
 			playerTocheckforKo = BLACK_ST;
 		}
 		else {
-			(*score).black ++;
+			(*score).black++;
 			playerTocheckforKo = WHITE_ST;
 		}
 		if (checkForOtherPlayerIsSurr(g_tab2, boardSize, &playerTocheckforKo, y, x, score) == false) (*g_tab2)[tempy][tempx] = NONE;
@@ -890,11 +1016,17 @@ void checkKo(enum player_stone_t*** g_tab2, int* boardSize, Score* score, int ot
 	}
 }
 
-void outFromKoRule(enum player_stone_t*** g_tab2, int* boardSize) {
-	int static move = 0; 
+void outFromKoRule(enum player_stone_t*** g_tab2, int* boardSize, Score* score, int currScoreWhite, int currScoreBlack) {
+	int static move = 0;
 	for (int i = 0; i < *boardSize; i++) {
 		for (int j = 0; j < *boardSize; j++) {
-			if ((*g_tab2)[i][j]==DOT_KO) {
+			//checking if during one move is possible to create a situation of killing one chain and second that passes contitions for KO (in this situation we will not consider KO rule)
+			if (((*g_tab2)[i][j] == DOT_KO) && ((((*score).white - currScoreWhite) > 1) || (((*score).black - currScoreBlack) > 1))) {
+				(*g_tab2)[i][j] = NONE;
+				move = 0;
+				return;
+			}
+			else if ((*g_tab2)[i][j] == DOT_KO) {
 				if (move > 0) { //next move remove dot from the place where the KO rule applied
 					(*g_tab2)[i][j] = NONE;
 					move = 0;
@@ -905,4 +1037,54 @@ void outFromKoRule(enum player_stone_t*** g_tab2, int* boardSize) {
 			}
 		}
 	}
+}
+
+
+//count end points/ count area
+
+void countingPoints(int* boardSize, enum player_stone_t** g_tab2, enum player_stone_t notTosurround, Score* endScore) {
+	int** arr;
+	int** arr2;
+	int yNow, xNow;
+	int free = 0;
+	int count = 0;
+	allocatetabChainAndFillWithZero(&arr, boardSize);
+	allocatetabChainAndFillWithZero(&arr2, boardSize);
+	for (int i = 0; i < *boardSize; i++) {
+		for (int j = 0; j < *boardSize; j++) {
+			if ((g_tab2[i][j] == NONE) && (arr2[i][j] != 1)) {
+				yNow = i;
+				xNow = j;
+				check(&g_tab2, &arr, boardSize, yNow, xNow, &free, notTosurround, NONE, NONE);//czy dookoÃÂ¯ÃÂ¿ÃÂ½a biaÃÂ¯ÃÂ¿ÃÂ½e
+				if (free != 0) {
+					freetabTempChain(arr, boardSize);
+					allocatetabChainAndFillWithZero(&arr, boardSize);
+				}
+				else {
+					for (int k = 0; k < *boardSize; k++) {
+						for (int p = 0; p < *boardSize; p++) {
+							if (arr[k][p] == 1) {
+								arr2[k][p] = arr[k][p];
+							}
+						}
+					}
+				}
+				free = 0;
+			}
+		}
+	}
+	
+	for (int i = 0; i < *boardSize; i++) {
+		for (int j = 0; j < *boardSize; j++) {
+			if (notTosurround == BLACK_ST) {
+				(*endScore).white += arr2[i][j];
+			}
+			else {
+				(*endScore).black += arr2[i][j];
+			}
+		}
+	}
+
+	freetabTempChain(arr, boardSize);
+	freetabTempChain(arr2, boardSize);
 }
