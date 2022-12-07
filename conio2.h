@@ -57,7 +57,6 @@
 #define KEY_I  105
 #define KEY_N 110
 #define KEY_S 115
-#define KEY_F 102
 #define KEY_ESC 27
 #define KEY_ENTER 0x0d
 #define KEY_Q 113
@@ -85,7 +84,6 @@
 #define PRE_GAME_STATE 0
 #define PLAY_GAME_STATE 1
 #define HANDICAP_STATE 2
-#define END_GAME_STATE 3
 
 
 extern int _wscroll;		// 1 = enable scroll
