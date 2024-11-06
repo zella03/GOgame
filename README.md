@@ -1,4 +1,4 @@
-University project for the Basics of computer programming course conducted during the first semester. The aim of the project was to design and implement game GO in C language. 
+University project for the Basics of computer programming course conducted during the first semester. The aim of the project was to design and implement game GO in C/C++ language. 
 
 Game rules:
 - Starting with black, each player takes turns to place a single stone on the board.
